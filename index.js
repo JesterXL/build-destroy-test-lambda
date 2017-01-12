@@ -1,5 +1,11 @@
+"use strict";
 const _ = require('lodash');
-const { validator, checker } = require('./predicates');
+const log = console.log;
+// Note: the below only works in newer Node, not the 4.x version AWS uses
+// const { validator, checker } = require('./predicates');
+const predicates = require('./predicates');
+const validator = predicates.validator;
+const checker = predicates.checker;
 
 const alwaysTrue = ()=> true;
 const getRandomNumberFromRange = (start, end)=>
@@ -90,6 +96,7 @@ const handler = (event, context, callback) =>
     const end          = _.get(event, 'end');
     const randomNumber = getRandomNumberFromRange(start, end);
     const response     = getResponse(randomNumber);
+    callback(undefined, randomNumber);
     return response;
 };
 

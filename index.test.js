@@ -10,8 +10,15 @@ const {
 const responseLike = (o)=> _.isObjectLike(o) && _.has(o, 'statusCode') && _.has(o, 'body');
 const responseSucceeded = (o)=>
 {
-    const body = JSON.parse(o.body);
-    return body.result === true;
+    try
+    {
+        const body = JSON.parse(o.body);
+        return body.result === true;
+    }
+    catch(err)
+    {
+        return false;
+    }
 };
 
 describe('#index', ()=>

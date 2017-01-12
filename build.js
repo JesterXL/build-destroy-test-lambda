@@ -80,12 +80,15 @@ module.exports = {
     deleteFunction
 };
 
-// createFunction(lambda, fs, (err, data)=>
-// {
-//     log("err:", err);
-//     log("data:", data);
-// });
-// deleteFunction(lambda, (a, b)=>{
-//     log("a:", a);
-//     log("b:", b);
-// });
+
+deleteFunction(lambda, (err, data)=>{
+    log("deleteFunction");
+    log("err:", err);
+    log("data:", data);
+    createFunction(lambda, fs, (err, data)=>
+    {
+        log("createFunction");
+        log("err:", err);
+        log("data:", data);
+    });
+});
