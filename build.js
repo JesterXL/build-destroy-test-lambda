@@ -45,6 +45,26 @@ const getProgram = (argsv)=>
     return {action: ACTION_NOTHING};
 };
 
+const performActionIfPassed = (callback)=>
+{
+    const program = getProgram(process.argv);
+    if(program.action === ACTION_BUILD)
+    {
+        createFunction(lambda, fs, callback);
+    }
+    else if(program.action === ACTION_DESTROY)
+    {
+        deleteFunction(lambda, callback);
+    }
+    else if(program.action === ACTION_DESTROY_AND_BUILD)
+    {
+        deleteFunction(lambda, (err, data)=>
+        {
+            createFunction(lambda, fs, callback);
+        });
+    }
+};
+
 const listFunctions = (lambda, callback)=>
 {
     var params = {
@@ -70,6 +90,7 @@ const ROLE                = 'arn:aws:iam::089724945947:role/lambda_basic_executi
 
 const createFunction = (lambda, fs, callback)=>
 {
+    log("Create function...");
     var params = {
         Code: {
             ZipFile: fs.readFileSync('deploy.zip')
@@ -83,16 +104,17 @@ const createFunction = (lambda, fs, callback)=>
     {
         if(err)
         {
-            // console.log("err:", err);
+            console.log("err:", err);
             return callback(err);
         }
-        // log("data:", data);
+        log("data:", data);
         callback(undefined, data);
     });
 };
 
 const deleteFunction = (lambda, callback)=>
 {
+    log("Delete function...");
     var params = {
         FunctionName: FUNCTION_NAME
     };
@@ -100,19 +122,21 @@ const deleteFunction = (lambda, callback)=>
     {
         if(err)
         {
-            // log("lambda::deleteFunction, error:", err);
+            log("lambda::deleteFunction, error:", err);
             return callback(err);
         }
-        // log("lambda::deleteFunction, data:", data);
+        log("lambda::deleteFunction, data:", data);
         callback(undefined, data);
     });
 };
 
-
-// if (require.main === module)
-// {
-//     performActionIfPassed(process.argv);
-// }
+if(require.main === module)
+{
+    performActionIfPassed((err, data)=>
+    {
+        log("Done.");  
+    });
+}
 
 module.exports = {
     listFunctions,
@@ -125,4 +149,4 @@ module.exports = {
     ACTION_DESTROY_AND_BUILD
 };
 
-log(process.argv);
+// log(process.argv);

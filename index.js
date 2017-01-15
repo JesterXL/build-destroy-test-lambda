@@ -80,7 +80,9 @@ const handler = (event, context, callback) =>
 
     if(event.echo === true)
     {
+        log("echo received.");
         const echoResponse = getResponse('pong');
+        log("sending response:", echoResponse);
         callback(undefined, echoResponse);
         return echoResponse;
     }
