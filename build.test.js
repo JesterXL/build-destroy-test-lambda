@@ -1,10 +1,16 @@
 const expect = require("chai").expect;
 const should = require('chai').should();
 const _ = require('lodash');
+const log = console.log;
 const {
 	listFunctions,
 	createFunction,
-	deleteFunction
+	deleteFunction,
+	getProgram,
+	ACTION_NOTHING,
+	ACTION_BUILD,
+	ACTION_DESTROY,
+	ACTION_DESTROY_AND_BUILD
 } = require('./build');
 
 const mockLamba = {
@@ -79,6 +85,46 @@ describe('#deleteFunction', ()=>
 			err.should.exist;
 			done();
 		});
+	});
+});
+
+describe.only('#getProgram', ()=>
+{
+	it('should not build with no parameters', ()=>
+	{
+		const program = getProgram();
+		expect(program.action).to.equal(ACTION_NOTHING);
+	});
+	it('should build if we tell it to do so', ()=>
+	{
+		const parameters = [
+			'node is rad',
+			'testing bro',
+			'--build'
+		];
+		const program = getProgram(parameters);
+		expect(program.action).to.equal(ACTION_BUILD);
+	});
+	it('should destroy if we tell it to do so', ()=>
+	{
+		const parameters = [
+			'node is rad',
+			'testing bro',
+			'--destroy'
+		];
+		const program = getProgram(parameters);
+		expect(program.action).to.equal(ACTION_DESTROY);
+	});
+	it('should destroy and build', ()=>
+	{
+		const parameters = [
+			'node is rad',
+			'testing bro',
+			'--destroy',
+			'--build'
+		];
+		const program = getProgram(parameters);
+		expect(program.action).to.equal(ACTION_DESTROY_AND_BUILD);
 	});
 });
 

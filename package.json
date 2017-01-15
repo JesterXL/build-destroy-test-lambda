@@ -4,7 +4,7 @@
   "description": "builds destroys and tests an AWS Lambda",
   "main": "index.js",
   "scripts": {
-    "test": "mocha index.test.js",
+    "test": "mocha *.test.js",
     "makezip": "zip -r -X deploy.zip index.js predicates.js node_modules",
     "deletezip": "rm -f deploy.zip"
   },
@@ -13,11 +13,11 @@
   "dependencies": {
     "archiver": "^1.3.0",
     "aws-sdk": "^2.7.20",
-    "chai": "^-3.5.0",
     "lodash": "^4.17.3",
     "mocha": "^3.2.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "mocha": "^3.2.0"
   }
 }

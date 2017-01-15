@@ -5,6 +5,46 @@ const lambda   = new AWS.Lambda();
 const fs       = require('fs');
 const _        = require('lodash');
 
+const ACTION_NOTHING           = 'nothing';
+const ACTION_BUILD             = 'build';
+const ACTION_DESTROY           = 'destroy';
+const ACTION_DESTROY_AND_BUILD = 'destroy and build';
+
+const hasBigBuild   = (array) => _.includes(array, '--build');
+const hasSmallBuild = (array) => _.includes(array, '-b');
+const hasBuild      = (array) => hasBigBuild(array) || hasSmallBuild(array);
+
+const hasBigDestroy   = (array) => _.includes(array, '--destroy');
+const hasSmallDestroy = (array) => _.includes(array, '-d');
+const hasDestroy      = (array) => hasBigDestroy(array) || hasSmallDestroy(array);
+
+const hasDestroyAndBuild = (array) => hasBuild(array) && hasDestroy(array);
+
+const getProgram = (argsv)=>
+{
+    if(_.isArray(argsv) === false)
+    {
+        return {action: ACTION_NOTHING};
+    }
+
+    if(hasDestroyAndBuild(argsv) === true)
+    {
+        return {action: ACTION_DESTROY_AND_BUILD};
+    }
+
+    if(hasBuild(argsv) === true)
+    {
+        return {action: ACTION_BUILD};
+    }
+
+    if(hasDestroy(argsv) === true)
+    {
+        return {action: ACTION_DESTROY};
+    }
+
+    return {action: ACTION_NOTHING};
+};
+
 const listFunctions = (lambda, callback)=>
 {
     var params = {
@@ -77,18 +117,12 @@ const deleteFunction = (lambda, callback)=>
 module.exports = {
     listFunctions,
     createFunction,
-    deleteFunction
+    deleteFunction,
+    getProgram,
+    ACTION_BUILD,
+    ACTION_DESTROY,
+    ACTION_NOTHING,
+    ACTION_DESTROY_AND_BUILD
 };
 
-
-deleteFunction(lambda, (err, data)=>{
-    log("deleteFunction");
-    log("err:", err);
-    log("data:", data);
-    createFunction(lambda, fs, (err, data)=>
-    {
-        log("createFunction");
-        log("err:", err);
-        log("data:", data);
-    });
-});
+log(process.argv);
